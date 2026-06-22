@@ -87,8 +87,17 @@ export default function StoreDetail() {
             <div className="dt-sech">신메뉴</div>
             {newm.map((m, i) => (
               <div className="menu-li" key={i} onClick={() => openFood(m)}>
-                <div className="ml-txt"><div className="nm">{m.mn}</div><div className="pr">{m.pr}</div><div className="rt"><Icon name="thumb_up" />{m.good || ''}</div></div>
-                <div className="mimg"><img src={imgSrc(m.img)} alt="" /><div className="m-actions"><Heart m={m} /><AddCart m={m} /></div></div>
+                <div className="ml-txt">
+                  <div className="nm" style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                    <span>{m.mn}</span>
+                    <span className={`m-heart-inline ${isFav(m.mn, s.nm) ? 'faved' : ''}`} onClick={(e) => toggleFav(m, e)}>
+                      <Icon name="favorite" fill={isFav(m.mn, s.nm)} />
+                    </span>
+                  </div>
+                  <div className="pr">{m.pr}</div>
+                  <div className="rt"><Icon name="thumb_up" />{m.good || ''}</div>
+                </div>
+                <div className="mimg"><img src={imgSrc(m.img)} alt="" /><div className="m-actions"><AddCart m={m} /></div></div>
               </div>
             ))}
           </>
