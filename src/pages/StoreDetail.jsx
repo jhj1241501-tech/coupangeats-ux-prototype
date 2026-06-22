@@ -106,13 +106,15 @@ export default function StoreDetail() {
       <div className="dock">
         <div className="cartbar">
           <div className="promo">WOW 와우회원 배달비 0원 + 4,500원 즉시할인 적립혜택</div>
-          <div className="cbtn" onClick={() => navigate('/cart')}>
-            <Icon name="shopping_cart" fill />
-            {cart.active ? (
-              <><span className="old">{won(cart.fin + 5000)}</span>{won(cart.fin)} 카트보기</>
-            ) : (
-              <><span className="old">28,000원</span>23,000원 카트보기</>
-            )}
+          <div className="cbtn cartview" onClick={() => navigate('/cart')}>
+            <span className="cv-left"><span className="qbadge">{cart.active ? cart.qty : 1}</span>카트 보기</span>
+            <span className="cv-price">
+              {cart.active ? (
+                <><span className="old">{won(cart.fin + 5000)}</span>{won(cart.fin)}</>
+              ) : (
+                <><span className="old">28,000원</span>23,000원</>
+              )}
+            </span>
           </div>
         </div>
         <HomeIndicator />
