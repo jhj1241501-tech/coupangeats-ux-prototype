@@ -585,7 +585,7 @@ const mi = (n,cls='')=>{
   if(e && typeof e==='object'){ d = (cls.indexOf('fill')>-1 && e.f) ? e.f : (e.o||e.f); }
   return `<svg class="material-symbols-rounded ${cls}" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path d="${d||''}"/></svg>`;
 };
-const img = (k,cls='') => `<img class="${cls}" src="${enc(IMG[k])}" alt="">`;
+const img = (k,cls='') => `<img class="${cls}" src="images/${enc(IMG[k])}" alt="">`;
 
 /* ---------- shared components ---------- */
 function statusBar(dark){
