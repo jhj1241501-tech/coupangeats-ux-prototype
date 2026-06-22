@@ -259,6 +259,7 @@ body{
 .pop{flex:0 0 auto;width:104px;}
 .pop .pimg{position:relative;border-radius:12px;overflow:hidden;height:104px;background:#eee;}
 .pop .pimg img{width:100%;height:100%;object-fit:cover;}
+.pop .rank{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.3);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;z-index:2;}
 .pop .pimg .addcart{position:absolute;right:6px;bottom:6px;width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(0,0,0,.22);}
 .pop .pimg .addcart .material-symbols-rounded{font-size:18px;color:var(--sky);}
 .pop .pimg .q{position:absolute;right:6px;bottom:6px;width:30px;height:30px;border-radius:50%;background:var(--sky);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}

@@ -77,7 +77,7 @@ export default function StoreDetail() {
         <div className="pop-grid">
           {pop.map((m, i) => (
             <div className="pop" key={i} onClick={() => openFood(m)}>
-              <div className="pimg"><img src={imgSrc(m.img)} alt="" /><div className="m-actions"><Heart m={m} /><AddCart m={m} /></div></div>
+              <div className="pimg"><img src={imgSrc(m.img)} alt="" /><span className="rank">{i+1}위</span><div className="m-actions"><AddCart m={m} /></div></div>
               <div className="nm">{m.mn}</div><div className="pr">{m.pr}</div>
             </div>
           ))}
