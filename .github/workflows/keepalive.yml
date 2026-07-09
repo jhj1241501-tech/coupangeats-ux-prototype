@@ -12,11 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase REST
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
+          # Secret 값에 섞였을 수 있는 앞뒤 공백/개행 제거
+          URL=$(echo -n "$SUPABASE_URL" | tr -d '[:space:]')
+          KEY=$(echo -n "$SUPABASE_ANON_KEY" | tr -d '[:space:]')
           code=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/favorites?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+            "$URL/rest/v1/favorites?select=id&limit=1" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY")
           echo "HTTP $code"
           if [ "$code" != "200" ]; then
             echo "Keepalive 실패: HTTP $code"
