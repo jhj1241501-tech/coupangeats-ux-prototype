@@ -1,17 +1,21 @@
 name: Supabase Keepalive
 
-# Supabase 무료 플랜은 7일 무활동 시 자동 일시정지된다.
-# 매일 favorites 테이블에 가벼운 SELECT를 날려 7일 타이머를 리셋한다.
+# Supabase 무료 플랜은 무활동이 이어지면 프로젝트를 자동 일시정지한다.
+# 읽기 전용 핑(select)만으로는 "활동"으로 안 잡히는 정황이 있어(2026-08-05 경고 메일),
+# keepalive 테이블에 실제 쓰기(update)를 하루 3회 날린다.
+# favorites 테이블은 실사용 데이터라 절대 건드리지 않는다.
 on:
   schedule:
-    - cron: "0 15 * * *"   # 매일 15:00 UTC (한국 자정)
+    - cron: "0 3 * * *"    # 매일 03:00 UTC (한국 12시)
+    - cron: "0 11 * * *"   # 매일 11:00 UTC (한국 20시)
+    - cron: "0 19 * * *"   # 매일 19:00 UTC (한국 익일 04시)
   workflow_dispatch:        # 수동 실행 버튼
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase REST
+      - name: Write ping to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -19,13 +23,24 @@ jobs:
           # Secret 값에 섞였을 수 있는 앞뒤 공백/개행 제거
           URL=$(echo -n "$SUPABASE_URL" | tr -d '[:space:]')
           KEY=$(echo -n "$SUPABASE_ANON_KEY" | tr -d '[:space:]')
-          code=$(curl -s -o /dev/null -w "%{http_code}" \
-            "$URL/rest/v1/favorites?select=id&limit=1" \
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          body=$(mktemp)
+          code=$(curl -s -o "$body" -w "%{http_code}" -X PATCH \
+            "$URL/rest/v1/keepalive?id=eq.1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY")
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"pinged_at\":\"$NOW\"}")
           echo "HTTP $code"
+          cat "$body"
           if [ "$code" != "200" ]; then
             echo "Keepalive 실패: HTTP $code"
+            exit 1
+          fi
+          # 갱신된 행이 실제로 돌아왔는지 확인 (빈 배열이면 행이 없거나 RLS에 막힌 것)
+          if ! grep -q "pinged_at" "$body"; then
+            echo "Keepalive 실패: 갱신된 행이 없음. keepalive 테이블/정책 확인 필요"
             exit 1
           fi
           echo "Keepalive 성공"
